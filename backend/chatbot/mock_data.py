@@ -5,11 +5,11 @@ random.seed(42)  # same data every run, so tests are repeatable
 
 def build_rooms():
     rooms = []
-    for block in "ABC":
+    for block in "BDE":
         for level in (4, 5, 6):
             for n in range(1, 11):
                 rooms.append({
-                    "room_id": f"{block}-{level}-{n}", "room_type": "classroom",
+                    "room_id": f"{block}-{level:02d}-{n:02d}", "room_type": "classroom",
                     "block": block, "level": level,
                     "capacity": random.choice([20, 30, 40, 50]),
                     "facilities": random.sample(["projector", "whiteboard", "power_outlet"], k=random.randint(1, 3)),
@@ -17,7 +17,7 @@ def build_rooms():
                 })
         for n in range(1, 11):
             rooms.append({
-                "room_id": f"Tech Lab {block}-6-{n}", "room_type": "tech_lab",
+                "room_id": f"{block}-06-L{n:02d}", "room_type": "tech_lab",
                 "block": block, "level": 6,
                 "capacity": random.choice([20, 25, 30]),
                 "facilities": ["computers", "projector"],

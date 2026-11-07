@@ -8,9 +8,9 @@ from mock_data import fake_find_free_rooms
 
 questions = [
     "Any free room for 6 people in Block B at 2pm?",
-    #"Tech lab in block A with computers",
+    #"Tech lab in block D with computers",
     #"Free classroom on level 5 with a projector for 30 people",
-    #"Can I book A-6-10 at 3pm?",
+    #"Can I book E-04-03 at 3pm?",
     #"What's the weather today?",
 ]
 

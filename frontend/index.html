@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SpaceFinder · find a room, claim it</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><div class="brand mono">◧ SpaceFinder</div><h1>Find a room.<br><em>Claim it.</em></h1><p class="sub">Empty classrooms &amp; tech labs for group study · Blocks B, D, E</p></div>
+  <div class="hd-r"><span class="pill mono" id="who"></span><button class="chip" id="logout">Log out</button><button class="chip theme" id="theme" aria-label="Toggle theme">◐</button></div>
+</header>
+
+<section class="box ctl">
+  <div><label>Block</label><div class="seg" id="fb"></div></div>
+  <div><label>Level</label><div class="seg" id="fl"></div></div>
+  <div id="ftw"><label>Type</label><div class="seg" id="ft"></div></div>
+  <div><label>Start</label><select id="fs"></select></div>
+  <div><label>Duration</label><select id="fd"></select></div>
+</section>
+
+<div class="layout">
+<main>
+  <div class="stats" id="stats"></div>
+  <div class="grid" id="grid"></div>
+</main>
+<aside class="box"><h3>My bookings</h3><div id="mine"></div>
+  <p class="muted" id="rules" style="font-size:12px;margin:12px 0 0"></p></aside>
+</div>
+</div>
+
+<section class="login" id="login" hidden>
+  <div class="box login-card">
+    <div class="brand mono">◧ SpaceFinder</div>
+    <h1>Find a room.<br><em>Claim it.</em></h1>
+    <p class="sub">Sign in with your student ID to see free rooms and book them.</p>
+    <label for="liId">Student ID</label>
+    <input id="liId" placeholder="Student ID" maxlength="15" autocomplete="off" autocapitalize="characters">
+    <p class="login-err" id="liErr" role="alert"></p>
+    <button class="go" id="liGo">Continue →</button>
+    <p class="muted" style="font-size:12px;margin:12px 0 0">No password for now. Your ID is only used to keep track of your bookings.</p>
+  </div>
+</section>
+
+<dialog id="dlg"></dialog>
+<div id="toast"></div>
+
+<button class="fab" id="chatFab">✦ Ask SpaceFinder</button>
+<section class="chat box" id="chat" hidden aria-label="SpaceFinder assistant">
+  <div class="chat-h"><b>SpaceFinder AI</b><button class="x" id="chatX" aria-label="Close chat">✕</button></div>
+  <div class="chat-m" id="chatM"></div>
+  <div class="chips" id="chatS"></div>
+  <div class="chat-f"><input id="chatIn" placeholder="e.g. free room for 6 at 2pm in block E" maxlength="300" autocomplete="off"><button class="go" id="chatGo">Send</button></div>
+</section>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/chat.js"></script>
+</body>
+</html>

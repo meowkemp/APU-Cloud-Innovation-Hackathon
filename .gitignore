@@ -1,4 +1,8 @@
-
 .env
 .venv/
 extract_cache.json
+node_modules/
+.DS_Store
+__pycache__/
+*.log
+dist/

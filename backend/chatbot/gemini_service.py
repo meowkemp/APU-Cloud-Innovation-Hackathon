@@ -11,8 +11,6 @@ from pydantic import BaseModel, Field
 import time
 from google.genai import errors
 
-FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash")
-
 def call_gemini(contents, config, retries=3):
     """Try the main model with retries, then fall back to a backup model."""
     for model in (MODEL, FALLBACK_MODEL):
@@ -28,14 +26,15 @@ def call_gemini(contents, config, retries=3):
 load_dotenv()
 client = genai.Client()
 MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash")  # after load_dotenv so .env is honoured
 
 LAYOUT = """Campus layout:
-- Blocks: A, B, C. Each block has levels 4, 5, 6. Each level has 10 classrooms.
+- Blocks: B, D, E. Each block has levels 4, 5, 6. Each level has 10 classrooms.
 - Level 6 of every block also has 10 tech labs.
-- Room IDs: classrooms like A-6-10 (Block A, level 6, room 10);
-  tech labs like Tech Lab A-6-10.
+- Room IDs: classrooms like E-04-03 (Block E, level 4, classroom 3);
+  tech labs like E-06-L01 (Block E, level 6, lab 1).
 - Reply in plain text with no markdown (no asterisks or bullet symbols). Use one line per room, like:
-  B-4-1 (40 seats, power outlet, whiteboard) - free until 17:00
+  B-04-01 (40 seats, power outlet, whiteboard) - free until 17:00
 - Start directly with the answer, with no greeting.
 - Remind the student that each booking is limited to 1 hour, and that bookings are confirmed by the system.
 Booking rules: max 2 bookings per student per day, each booking max 1 hour.
@@ -45,10 +44,10 @@ class RoomQuery(BaseModel):
     intent: Literal["find_free_room", "book_room", "other"] = Field(
         description="find_free_room to search, book_room to reserve a specific room, other if unrelated"
     )
-    block: Optional[Literal["A", "B", "C"]] = Field(None, description="Block letter, or null")
+    block: Optional[Literal["B", "D", "E"]] = Field(None, description="Block letter, or null")
     level: Optional[int] = Field(None, description="Level 4, 5 or 6, or null")
     room_type: Optional[Literal["classroom", "tech_lab"]] = None
-    room_id: Optional[str] = Field(None, description="Exact room label like A-6-10 or Tech Lab A-6-10, or null")
+    room_id: Optional[str] = Field(None, description="Exact room label like E-04-03 or E-06-L01, or null")
     start_time: Optional[str] = Field(None, description="Time only, 24-hour HH:MM. No date.")
     end_time: Optional[str] = Field(None, description="Time only, 24-hour HH:MM, or null")
     min_capacity: Optional[int] = None
