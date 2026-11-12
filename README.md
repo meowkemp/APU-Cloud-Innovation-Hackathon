@@ -4,7 +4,7 @@ SpaceFinder is a campus room finder and booking app built for the **APU Cloud In
 
 ## 🎥 Demo Video
 ```
-https://youtu.be/O9APzIVNmJs](https://drive.google.com/drive/folders/1s8xHHRRGwLA6KctSAlR8juae8i84gXU4?usp=sharing
+https://drive.google.com/drive/folders/1s8xHHRRGwLA6KctSAlR8juae8i84gXU4?usp=sharing
 ```
 
 ## Project Overview
