@@ -65,9 +65,14 @@
       events: [...seeded(r.id, date), ...allBk().filter(b => b.roomId === r.id && b.date === date).map(b => b.uid === userId() ? { start: b.start, end: b.end, type: "booking", mine: true, bookingId: b.id, label: "Your booking" } : { start: b.start, end: b.end, type: "booking", label: "Booked by another student" })] })),
     getMyBookings: async ({ date }) => myBk().filter(b => b.date === date),
     createBooking: async b => {
+      const [firstDay, lastDay] = window.CONFIG.bookingWindow();
+      if (b.date < firstDay || b.date > lastDay) {
+        return fail("OUTSIDE_BOOKING_WEEK", "Choose a date in the available Monday–Friday booking window.");
+      }
+      if (!Number.isInteger(b.size) || b.size < 1 || b.size > 20) return fail("BAD_INPUT", "Enter a group size of 1 to 20 people.");
       const s = toMin(b.start), e = toMin(b.end), mineToday = myBk().filter(x => x.date === b.date);
       if (e - s > RULES.MAX_SESSION_MIN) return fail("MAX_DURATION", `Bookings are limited to ${RULES.MAX_SESSION_MIN} minutes.`);
-      if (s < RULES.OPEN_MIN || e > RULES.CLOSE_MIN) return fail("OUTSIDE_HOURS", "Rooms are open 08:00 to 20:00.");
+      if (s < RULES.OPEN_MIN || e > RULES.CLOSE_MIN) return fail("OUTSIDE_HOURS", "Rooms are open 08:00 to 18:00.");
       if (mineToday.length >= RULES.MAX_BOOKINGS_PER_DAY) return fail("DAILY_LIMIT", `You can book at most ${RULES.MAX_BOOKINGS_PER_DAY} sessions per day.`);
       const hit = [...seeded(b.roomId, b.date), ...allBk().filter(x => x.roomId === b.roomId && x.date === b.date)].find(v => overlap(toMin(v.start), toMin(v.end), s, e));
       if (hit) return fail(hit.type === "class" ? "CLASS_IN_SESSION" : "ROOM_OCCUPIED", "Room is not available.", { start: hit.start, end: hit.end, label: hit.label });

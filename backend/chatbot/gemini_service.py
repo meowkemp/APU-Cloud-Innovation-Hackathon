@@ -1,32 +1,46 @@
 #Holds Gemini client, backup model
 
 import os
-from typing import Optional
+import time
+from datetime import date as CalendarDate
+from functools import lru_cache
+from pathlib import Path
+from typing import Literal, Optional
+
 from dotenv import load_dotenv
 from google import genai
-from google.genai import types
-from pydantic import BaseModel
-from typing import Optional, Literal
+from google.genai import errors, types
 from pydantic import BaseModel, Field
-import time
-from google.genai import errors
 
-def call_gemini(contents, config, retries=3):
-    """Try the main model with retries, then fall back to a backup model."""
-    for model in (MODEL, FALLBACK_MODEL):
+load_dotenv(Path(__file__).with_name(".env"))
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash")
+
+
+@lru_cache
+def gemini_client():
+    key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not key:
+        raise RuntimeError("Set GEMINI_API_KEY to enable the assistant.")
+    return genai.Client(api_key=key, http_options=types.HttpOptions(timeout=10000))
+
+
+def call_gemini(contents, config, retries=2):
+    for model in dict.fromkeys((MODEL, FALLBACK_MODEL)):
         for attempt in range(retries):
             try:
-                return client.models.generate_content(
+                return gemini_client().models.generate_content(
                     model=model, contents=contents, config=config
                 )
             except errors.ServerError:
-                time.sleep(2 ** attempt)  # wait 1s, 2s, 4s
+                if attempt + 1 < retries:
+                    time.sleep(2 ** attempt)
+            except errors.ClientError as error:
+                if error.code not in (404, 429):
+                    raise
+                break
     raise RuntimeError("Gemini is unavailable right now")
 
-load_dotenv()
-client = genai.Client()
-MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
-FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash")  # after load_dotenv so .env is honoured
 
 LAYOUT = """Campus layout:
 - Blocks: B, D, E. Each block has levels 4, 5, 6. Each level has 10 classrooms.
@@ -48,6 +62,7 @@ class RoomQuery(BaseModel):
     level: Optional[int] = Field(None, description="Level 4, 5 or 6, or null")
     room_type: Optional[Literal["classroom", "tech_lab"]] = None
     room_id: Optional[str] = Field(None, description="Exact room label like E-04-03 or E-06-L01, or null")
+    date: Optional[CalendarDate] = Field(None, description="Requested date in YYYY-MM-DD, or null")
     start_time: Optional[str] = Field(None, description="Time only, 24-hour HH:MM. No date.")
     end_time: Optional[str] = Field(None, description="Time only, 24-hour HH:MM, or null")
     min_capacity: Optional[int] = None
@@ -59,7 +74,7 @@ def extract_query(question: str, now_iso: str) -> RoomQuery:
 
 Current date/time: {now_iso}
 Convert the student's question into search filters.
-Resolve words like "now" or "later" using the current time.
+Resolve relative times and dates, including tomorrow, using the current date and time.
 If something isn't mentioned, leave it null.
 
 Question: {question}"""

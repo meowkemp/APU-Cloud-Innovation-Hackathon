@@ -15,6 +15,7 @@
 </header>
 
 <section class="box ctl">
+  <div><label for="fdate">Date</label><select id="fdate"></select></div>
   <div><label>Block</label><div class="seg" id="fb"></div></div>
   <div><label>Level</label><div class="seg" id="fl"></div></div>
   <div id="ftw"><label>Type</label><div class="seg" id="ft"></div></div>
@@ -38,7 +39,7 @@
     <h1>Find a room.<br><em>Claim it.</em></h1>
     <p class="sub">Sign in with your student ID to see free rooms and book them.</p>
     <label for="liId">Student ID</label>
-    <input id="liId" placeholder="Student ID" maxlength="15" autocomplete="off" autocapitalize="characters">
+    <input id="liId" placeholder="e.g. TP012345" maxlength="8" autocomplete="off" autocapitalize="characters">
     <p class="login-err" id="liErr" role="alert"></p>
     <button class="go" id="liGo">Continue →</button>
     <p class="muted" style="font-size:12px;margin:12px 0 0">No password for now. Your ID is only used to keep track of your bookings.</p>
@@ -56,9 +57,9 @@
   <div class="chat-f"><input id="chatIn" placeholder="e.g. free room for 6 at 2pm in block E" maxlength="300" autocomplete="off"><button class="go" id="chatGo">Send</button></div>
 </section>
 
-<script src="js/config.js"></script>
-<script src="js/api.js"></script>
-<script src="js/app.js"></script>
+<script src="js/config.js?v=booking-update"></script>
+<script src="js/api.js?v=booking-update"></script>
+<script src="js/app.js?v=booking-update"></script>
 <script src="js/chat.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ This is the agreement between frontend and backend. As long as both sides follow
 
 - Base URL: `http://localhost:3000/api` (change in `frontend/js/config.js`)
 - All bodies are JSON. Times are 24h `"HH:MM"` strings and dates are `"YYYY-MM-DD"`, all in campus local time.
-- The frontend has a login screen that asks for a student ID (letters and numbers, 4 to 15 characters, upper-cased). That ID is sent as the `X-User-Id` header on every request and is the user's identity. There is no password and no login endpoint for now, so the backend simply trusts the header. See the Identity section below.
+- The frontend has a login screen that asks for a student ID (TP followed by exactly six digits, normalized to uppercase). That ID is sent as the `X-User-Id` header on every request and is the user's identity. There is no password and no login endpoint for now, so the backend simply trusts the header. See the Identity section below.
 - Room IDs look like `E-04-03` (block E, level 4, classroom 3). Tech labs look like `E-06-L01` and only exist on level 6.
 
 ## Business rules (the server must enforce these)
@@ -13,7 +13,8 @@ This is the agreement between frontend and backend. As long as both sides follow
 |---|---|---|
 | Max length of one booking | 60 minutes | `MAX_DURATION` |
 | Max bookings per user per day | 2 | `DAILY_LIMIT` |
-| Bookable hours | 08:00 to 20:00 | `OUTSIDE_HOURS` |
+| Bookable dates | Today through Friday on weekdays, upcoming Monday through Friday on weekends (campus time) | `OUTSIDE_BOOKING_WEEK` |
+| Bookable hours | 08:00 to 18:00 | `OUTSIDE_HOURS` |
 | Room has a scheduled class in that slot | not bookable | `CLASS_IN_SESSION` |
 | Room already booked by someone else | not bookable | `ROOM_OCCUPIED` |
 
@@ -63,6 +64,8 @@ Request
 ```json
 { "roomId": "E-04-03", "date": "2026-11-06", "start": "16:00", "end": "17:00", "name": "Jun", "size": 4 }
 ```
+
+`size` must be a whole number from 1 to 20 inclusive.
 
 `201 Created` returns the booking object. On failure return `409` (or `400` for bad input) with the shape below.
 
